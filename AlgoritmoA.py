@@ -1,3 +1,6 @@
+import pygame
+import os
+
 class nodo():
     def __init__(self,padre=None,pos=None):
         self.padre = padre
@@ -67,9 +70,15 @@ def a_algorit(matriz,pos_ini,pos_final):
                     if dat == open_node and dat.g > open_node.g:continue
                 L_Abiertas.append(dat)
 
+def cargarImagenes(pos_i,pos_f):
+    img = []
+    fondo = "img/fondocancha.png"
+
+    img.append(pygame.image.load(fondo))
+    return img
 
 def main():
-    mapa = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    mapaBit = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -82,8 +91,24 @@ def main():
     
     start = (0,0)
     end = (4,3)
-    path = a_algorit(mapa,start,end)
+    path = a_algorit(mapaBit,start,end)
     print(path)
+    
+    fil = len(mapaBit)
+    col = len(mapaBit[0])
+    TAM_TEXTURA = 63
+    pygame.init()
+    pygame.display.set_caption("Laberinto")
+    pantalla = pygame.display.set_mode([600, 600])
+    texturas = cargarImagenes(start,end)
+
+    while True:
+        for eventos in pygame.event.get():
+            if eventos.type == pygame.QUIT:
+                exit()
+        pantalla.blit(texturas[0], [0,0])  
+   
+        pygame.display.update()
 
 if __name__ == '__main__':
     main()
