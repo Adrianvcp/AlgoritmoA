@@ -5,31 +5,67 @@ class nodo():
         self.g = 0
         self.h = 0
         self.f = 0
+    
+    def __eq__(self, other):
+        return self.pos == other.pos
 
 def a_algorit(matriz,pos_ini,pos_final):
     #Listas
     L_Abiertas = []
     L_Cerradas = []
-    print(pos_ini)
     #Nodo inicio y fin
     N_inicio = nodo(None,pos_ini)
     N_Fin = nodo(None,pos_final)
 
-    L_Abiertas.append(pos_ini)
+    L_Abiertas.append(N_inicio)
 
     while len(L_Abiertas) > 0:
-        nodo_actual = L_Abiertas[0]
-        print(nodo_actual.pos)
-        actual_idnx = 0
-        for index, item in enumerate(L_Abiertas):
-            if item.f < nodo_actual.f:
-                nodo_actual = item
-                actual_idnx = index
-
-        print(nodo_actual.pos)
-
-            
         
+        ndoActual = L_Abiertas[0]
+        ndoActual_i = 0
+        
+        for index, item in enumerate(L_Abiertas):
+            if item.f < ndoActual.f:
+                ndoActual = item
+                ndoActual_i = index
+
+        
+          
+        L_Abiertas.pop(ndoActual_i)
+        L_Cerradas.append(ndoActual)
+
+    
+        if ndoActual == N_Fin:
+            path = []
+            current = ndoActual
+            while current is not None:
+                path.append(current.pos)
+                current = current.padre
+            return path
+        
+        ndosVecinos = []
+        for variacion in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: 
+            node_position = (ndoActual.pos[0] + variacion[0], ndoActual.pos[1] + variacion[1])
+            if node_position[0] > (len(matriz) - 1) or node_position[0] < 0 or node_position[1] > (len(matriz[len(matriz)-1]) -1) or node_position[1] < 0:
+                continue
+            if matriz[node_position[0]][node_position[1]] != 0:
+                continue
+            if variacion == (1,1) or variacion == (-1,-1) or variacion == (-1,1) or variacion == (1,-1): 
+                new_node = nodo(ndoActual, node_position)
+                new_node.g = 14
+            else:
+                new_node = nodo(ndoActual, node_position)
+                new_node.g = 10
+            ndosVecinos.append(new_node) 
+
+
+            for dat in ndosVecinos:
+                if dat in L_Cerradas:   continue
+                dat.h = ((dat.pos[0] - N_Fin.pos[0]) ** 2) + ((dat.pos[1] - N_Fin.pos[1]) ** 2)
+                dat.f = dat.g + dat.h
+                for open_node in L_Abiertas:
+                    if dat == open_node and dat.g > open_node.g:continue
+                L_Abiertas.append(dat)
 
 
 def main():
@@ -45,6 +81,9 @@ def main():
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] 
     
     start = (0,0)
-    end = (6,8)
-    print(start)
-    a_algorit(mapa,start,end)
+    end = (4,3)
+    path = a_algorit(mapa,start,end)
+    print(path)
+
+if __name__ == '__main__':
+    main()
