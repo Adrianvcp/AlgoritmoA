@@ -1,6 +1,8 @@
 import pygame
 import os
 
+
+
 class nodo():
     def __init__(self,padre=None,pos=None):
         self.padre = padre
@@ -70,27 +72,52 @@ def a_algorit(matriz,pos_ini,pos_final):
                     if dat == open_node and dat.g > open_node.g:continue
                 L_Abiertas.append(dat)
 
-def cargarImagenes(pos_i,pos_f):
+def cargarImagenes():
     img = []
     fondo = "img/fondocancha.png"
+    muro = "img/jugador2.png"
+    entrada = "img/jugador.png"
+    salida = "img/jugador.png"
 
+    
     img.append(pygame.image.load(fondo))
+    img.append(pygame.image.load(muro))
+    img.append(pygame.image.load(entrada))
+    img.append(pygame.image.load(salida))
     return img
 
+def mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA):
+    for f in range(fil):
+            for c in range(col):
+                if mapaBit[f][c] == 1:
+                    pantalla.blit(texturas[1], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "#"
+                if mapaBit[f][c] == 2:
+                    pantalla.blit(texturas[2], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "T"
+                if mapaBit[f][c] == 3:
+                    pantalla.blit(texturas[3], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "S"
+
+
+def caminarPersonaje(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA,nodo):
+    mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA)
+    pantalla.blit(texturas[3], [nodo.pos[1] * TAM_TEXTURA, nodo.pos[0] * TAM_TEXTURA])
+    pygame.display.update()
+
+
+
 def main():
-    mapaBit = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    mapaBit = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [2, 0, 0, 1, 0, 1, 0, 1, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] 
+        [0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 3],
+        [0, 0, 0, 1, 0, 1, 0, 1, 0, 0],
+        [0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]] 
     
-    start = (0,0)
-    end = (4,3)
+    start = (2,0)
+    end = (5,8)
     path = a_algorit(mapaBit,start,end)
     print(path)
     
@@ -100,14 +127,16 @@ def main():
     pygame.init()
     pygame.display.set_caption("Laberinto")
     pantalla = pygame.display.set_mode([600, 600])
-    texturas = cargarImagenes(start,end)
+    texturas = cargarImagenes()
 
     while True:
         for eventos in pygame.event.get():
             if eventos.type == pygame.QUIT:
                 exit()
         pantalla.blit(texturas[0], [0,0])  
-   
+        
+        
+        mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA)
         pygame.display.update()
 
 if __name__ == '__main__':
