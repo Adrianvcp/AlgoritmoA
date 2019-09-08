@@ -2,8 +2,6 @@ import pygame
 import os
 import time
 
-
-
 class nodo():
     def __init__(self,padre=None,pos=None):
         self.padre = padre
@@ -54,8 +52,8 @@ def a_algorit(matriz,pos_ini,pos_final,pantalla):
             #Limite
             if node_position[0] > (len(matriz) - 1) or node_position[0] < 0 or node_position[1] > (len(matriz[len(matriz)-1]) -1) or node_position[1] < 0:
                 continue
-            caminarPersonaje(len(matriz),len(matriz[0]),matriz,pantalla,texturas2,63,node_position) #dib pos
-            time.sleep(1)
+#            caminarPersonaje(len(matriz),len(matriz[0]),matriz,pantalla,texturas2,63,node_position) #dib pos
+#            time.sleep(1)
             #Disponible ?
             if matriz[node_position[0]][node_position[1]] != 0:
                 continue
@@ -117,11 +115,11 @@ def caminarPersonaje(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA,nodo):
 def main():
     mapaBit = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [2, 0, 0, 1, 0, 1, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 3],
-        [0, 0, 0, 1, 0, 1, 0, 1, 0, 0],
+        [2, 0, 0, 1, 1, 1, 0, 1, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 1, 0, 1, 0, 0, 3],
+        [0, 0, 0, 1, 1, 1, 0, 1, 0, 0],
         [0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
         [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]] 
@@ -138,6 +136,8 @@ def main():
     pantalla = pygame.display.set_mode([600, 600])
     texturas = cargarImagenes()
 
+    path = None
+
     while True:
         for eventos in pygame.event.get():
             if eventos.type == pygame.QUIT:
@@ -146,10 +146,16 @@ def main():
         
         
         mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA) #Texturas
-        path = a_algorit(mapaBit,start,end,pantalla)
-        print(path)
+        if path is None:
+            path = a_algorit(mapaBit,start,end,pantalla)
+            print(path)
+            for position in reversed(path):
+                time.sleep(1)
+                caminarPersonaje(len(mapaBit),len(mapaBit[0]),mapaBit,pantalla,cargarImagenes(),63,position)
+                pygame.display.update()
+
     
-        pygame.display.update()
+        #pygame.display.update()
 
 if __name__ == '__main__':
     main()
