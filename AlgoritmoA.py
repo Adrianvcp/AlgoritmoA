@@ -105,16 +105,15 @@ def a_algorit(matriz,pos_ini,pos_final,pantalla):
             else:
                 new_node = nodo(ndoActual, node_position)
                 new_node.g = 10
-            ndosVecinos.append(new_node) 
+            ndosVecinos.append(new_node)
 
-
-            for dat in ndosVecinos:
-                if dat in L_Cerradas:   continue
-                dat.h = ((dat.pos[0] - N_Fin.pos[0]) ** 2) + ((dat.pos[1] - N_Fin.pos[1]) ** 2)
-                dat.f = dat.g + dat.h
-                for open_node in L_Abiertas:
-                    if dat == open_node and dat.g > open_node.g:continue
-                L_Abiertas.append(dat)
+        for dat in ndosVecinos:
+            if dat in L_Cerradas:   continue
+            dat.h = ((dat.pos[0] - N_Fin.pos[0]) ** 2) + ((dat.pos[1] - N_Fin.pos[1]) ** 2)
+            dat.f = dat.g + dat.h
+            for open_node in L_Abiertas:
+                if dat == open_node and dat.g > open_node.g:continue
+            L_Abiertas.append(dat)
 
 def cargarImagenes():
     img = []
@@ -139,10 +138,13 @@ def cargarImagenes():
     return img
 
 def mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA):
+    L_Flags = []
+    parent = None
     for f in range(fil):
             for c in range(col):
                 if mapaBit[f][c] == 1:
                     pantalla.blit(texturas[1], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "#"
+                    flag = nodo(parent, (f, c))
                 if mapaBit[f][c] == 2:
                     pantalla.blit(texturas[2], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "T"
                 if mapaBit[f][c] == 3:
@@ -234,6 +236,9 @@ def load_main_screen():
 
     #Punto de Meta
     end   = (11,33)
+
+    #Lista de Flags
+    L_Flags = []
 
     while True:
         clock.tick(60)
