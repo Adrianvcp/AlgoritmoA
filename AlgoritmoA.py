@@ -1,6 +1,7 @@
 import pygame
 import os
 import time
+from pygame.locals import Rect
 
 #Tamaño de la pantalla
 SCREEN_WIDTH = 1440
@@ -28,7 +29,7 @@ mapaBit = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], # 8
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], # 9
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], # 10
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0], # 11
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 7, 0, 0], # 11
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], # 12
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], # 13
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], # 14
@@ -57,6 +58,7 @@ def a_algorit(matriz,pos_ini,pos_final,pantalla):
     #Listas
     L_Abiertas = []
     L_Cerradas = []
+
     #Nodo inicio y fin
     N_inicio = nodo(None,pos_ini)
     N_Fin = nodo(None,pos_final)
@@ -96,8 +98,6 @@ def a_algorit(matriz,pos_ini,pos_final,pantalla):
             #Disponible ?
             if matriz[node_position[0]][node_position[1]] == 1:
                 continue
-            
-
 
             if variacion == (1,1) or variacion == (-1,-1) or variacion == (-1,1) or variacion == (1,-1): 
                 new_node = nodo(ndoActual, node_position)
@@ -125,6 +125,7 @@ def cargarImagenes():
     salida = "img/jugador.png"
     error = "img/JugadorEliminado.png"
     main_screen_background = "img/main_screen.png"
+    pelota = "img/pelota.png"
 
     
     img.append(pygame.image.load(fondo))                  # 0
@@ -134,6 +135,7 @@ def cargarImagenes():
     img.append(pygame.image.load(error))                  # 4
     img.append(pygame.image.load(background))             # 5
     img.append(pygame.image.load(main_screen_background)) # 6
+    img.append(pygame.image.load(pelota))                 # 7
     return img
 
 def mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA):
@@ -145,48 +147,13 @@ def mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA):
                     pantalla.blit(texturas[2], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "T"
                 if mapaBit[f][c] == 3:
                     pantalla.blit(texturas[3], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "S"
+                if mapaBit[f][c] == 7:
+                    pantalla.blit(texturas[7], [c * TAM_TEXTURA, f * TAM_TEXTURA])  # "Pelota"
+                if mapaBit[f][c] == 8:
+                    pygame.draw.circle(pantalla, (255, 0, 0), ((c * TAM_TEXTURA) + 20, (f * TAM_TEXTURA) + 20), 20, 0)
 
-def caminarPersonaje(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA,nodo):
-    #mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA)
-    
+def caminarPersonaje(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA,nodo):    
     pantalla.blit(texturas[2], [nodo[1] * TAM_TEXTURA, nodo[0] * TAM_TEXTURA])
-    pygame.display.update()
-
-def load_main_game():
-    
-    start = (2,3)
-    end   = (11,33)
-    
-    fil = len(mapaBit)
-    col = len(mapaBit[0])
-    pygame.init()
-    pygame.display.set_caption("Laberinto")
-    pantalla = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-    texturas = cargarImagenes()
-
-    path = None
-
-    clock = pygame.time.Clock()
-
-    while True:
-        for eventos in pygame.event.get():
-            if eventos.type == pygame.QUIT:
-                exit()
-        pantalla.blit(texturas[5], [0,0], (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))  #cancha
-        
-        
-        mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA) #Texturas
-        if path is None:
-            path = a_algorit(mapaBit,start,end,pantalla)
-            print(path)
-            for position in reversed(path):
-                clock.tick(60)
-                #time.sleep(0.1)
-                caminarPersonaje(len(mapaBit),len(mapaBit[0]),mapaBit,pantalla,cargarImagenes(),40,position)
-                pygame.display.update()
-
-    
-        #pygame.display.update()
 
 def load_main_screen():
     #Inicializar Pygame
@@ -238,11 +205,23 @@ def load_main_screen():
     main_quit_rect.centerx = pantalla.get_rect().centerx
     main_quit_rect.centery = pantalla.get_rect().centery + 160
 
+    #Mover jugador
+    move_player = subtitle_font.render('Mover jugador con Click Derecho', True, (255, 0, 0), (255, 255, 255))
+    move_player_rect = move_player.get_rect()
+    move_player_rect.centerx = 28 * TAM_TEXTURA
+    move_player_rect.centery = TAM_TEXTURA / 2
+
+    #Añadir bloqueo
+    add_block = subtitle_font.render('Añadir bloqueo con Click Izquierdo', True, (255, 0, 0), (255, 255, 255))
+    add_block_rect = add_block.get_rect()
+    add_block_rect.centerx = 28 * TAM_TEXTURA
+    add_block_rect.centery =  3 * TAM_TEXTURA / 2
+
     #Guardar ruta recorrida
     path = None
 
     #El juego comienza
-    gameStarted = False
+    gameStarted = 0
 
     #Cantidad de filas
     fil = len(mapaBit)
@@ -263,17 +242,42 @@ def load_main_screen():
             if eventos.type == pygame.QUIT:
                 exit()
             if eventos.type == pygame.MOUSEBUTTONDOWN:
-                if start_game_rect.collidepoint(eventos.pos):
-                    gameStarted = True
-                elif customize_game_rect.collidepoint(eventos.pos):
-                    print ("Personalizar el juego")
-                elif main_quit_rect.collidepoint(eventos.pos):
-                    exit()
-                elif gameStarted and back_title_rect.collidepoint(eventos.pos):
-                    gameStarted = False
+                if gameStarted == 0:
+                    if start_game_rect.collidepoint(eventos.pos):
+                        gameStarted = 1
+                    elif customize_game_rect.collidepoint(eventos.pos):
+                        gameStarted = 2
+                        mapaBit[start[0]][start[1]] = 2
+                    elif main_quit_rect.collidepoint(eventos.pos):
+                        exit()
+                else:
+                    if back_title_rect.collidepoint(eventos.pos):
+                        if gameStarted == 2:
+                            temp = a_algorit(mapaBit,start,end,pantalla)
+                            if temp != None:
+                                gameStarted = 0
+                                mapaBit[start[0]][start[1]] = 0
+                                path = None
+                            else:
+                                print("¡Mapa Inválido!")
+                        else:
+                            gameStarted = 0
+                            mapaBit[start[0]][start[1]] = 0
+                            path = None
+                    elif gameStarted == 2:
+                        if eventos.button == 1:
+                            if mapaBit[int(eventos.pos[1]/40)][int(eventos.pos[0]/40)] == 1:
+                                mapaBit[int(eventos.pos[1]/40)][int(eventos.pos[0]/40)] = 0
+                            else:
+                                mapaBit[int(eventos.pos[1]/40)][int(eventos.pos[0]/40)] = 1
+                        elif eventos.button == 3:
+                            mapaBit[start[0]][start[1]] = 0
+                            start = (int(eventos.pos[1]/40), int(eventos.pos[0]/40))
+                            mapaBit[int(eventos.pos[1]/40)][int(eventos.pos[0]/40)] = 2
+                
 
-        if gameStarted:
-            position = (0, 0)
+        if gameStarted == 1:
+            position = start
             #Precalcular ruta del juego
             if path is None:
                 path = a_algorit(mapaBit,start,end,pantalla)
@@ -291,8 +295,30 @@ def load_main_screen():
             pantalla.blit(back_title, back_title_rect)
 
             #Dibujar movimiento del jugador
-            if len(path) > 0:
-                caminarPersonaje(len(mapaBit),len(mapaBit[0]),mapaBit,pantalla,cargarImagenes(),40,position)
+            if path != None and len(path) > 0:
+                pygame.time.delay(100)
+                caminarPersonaje(len(mapaBit),len(mapaBit[0]),mapaBit,pantalla,texturas,40,position)
+        elif gameStarted == 2:
+            #Dibujar Fondo Principal
+            pantalla.blit(texturas[5], [0,0], (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))  #cancha
+
+            #Dibujar opcion para volver al menu principal
+            pantalla.blit(back_title, back_title_rect)
+
+            #Dibujar mapa con elementos
+            mapaDibujo(fil,col,mapaBit,pantalla,texturas,TAM_TEXTURA) #Texturas
+
+            #Dibujar bloqueo
+            pantalla.blit(texturas[1], [35 * TAM_TEXTURA, 0 * TAM_TEXTURA])  # "#"
+
+            #Dibujar player
+            pantalla.blit(texturas[2], [35 * TAM_TEXTURA, 1 * TAM_TEXTURA])  # "T"
+
+            #Dibujar titulo mover jugador
+            pantalla.blit(move_player, move_player_rect)
+
+            #Dibujar titulo añadir bloqueo
+            pantalla.blit(add_block  , add_block_rect)
         else:
             #Dibujar Fondo Principal
             pantalla.blit(texturas[6], [0,0], (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))  #pantalla principal
